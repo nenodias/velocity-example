@@ -18,6 +18,8 @@ public class SpringVelocityViewResolver implements ViewResolver {
     private final VelocityEngine velocityEngine;
 
     private final ServletConfig servletConfig;
+
+    private boolean cache;
     private String prefix;
     private String suffix;
     private String contentType;
@@ -31,7 +33,7 @@ public class SpringVelocityViewResolver implements ViewResolver {
     public View resolveViewName(final String viewName,final Locale locale) throws Exception {
         final VelocityView velocityView = new VelocityView(servletConfig);
         velocityView.setVelocityEngine(this.velocityEngine);
-        return new SpringVelocityView(velocityView, viewName, locale, prefix, suffix, contentType);
+        return new SpringVelocityView(velocityView, viewName, locale, cache, prefix, suffix, contentType);
     }
 
     public void setPrefix(final String prefix) {
@@ -58,19 +60,28 @@ public class SpringVelocityViewResolver implements ViewResolver {
         return contentType;
     }
 
+    public void setCache(boolean cache) {
+        this.cache = cache;
+    }
+
     class SpringVelocityView implements View {
 
         private final VelocityView velocityView;
         private final String viewName;
         private final Locale locale;
-        private String prefix;
-        private String suffix;
-        private String contentType;
 
-        public SpringVelocityView(final VelocityView velocityView,final String viewName,final Locale locale,final String prefix,final String suffix,final String contentType) {
+        private final boolean cache;
+        private final String prefix;
+        private final String suffix;
+        private final String contentType;
+
+        private Template template;
+
+        public SpringVelocityView(final VelocityView velocityView,final String viewName,final Locale locale,final boolean cache, final String prefix,final String suffix,final String contentType) {
             this.velocityView = velocityView;
             this.viewName = viewName;
             this.locale = locale;
+            this.cache = cache;
             this.prefix = prefix;
             this.suffix = suffix;
             this.contentType = contentType;
@@ -89,32 +100,25 @@ public class SpringVelocityViewResolver implements ViewResolver {
                 context.put(entry.getKey(), entry.getValue());
             }
             // get the template
-            final Template template = this.velocityView.getTemplate(this.prefix + this.viewName + this.suffix);
+            if(template == null || !this.isCache()) {
+                template = this.velocityView.getTemplate(this.prefix + this.viewName + this.suffix);
+            }
 
             // merge the template and context into the response
             this.velocityView.merge(template, context, response.getWriter());
-        }
-
-        public void setPrefix(final String prefix) {
-            this.prefix = prefix;
         }
 
         public String getPrefix() {
             return prefix;
         }
 
-        public void setSuffix(final String suffix) {
-            this.suffix = suffix;
-        }
-
         public String getSuffix() {
             return suffix;
         }
 
-        public void setContentType(final String contentType) {
-            this.contentType = contentType;
+        public boolean isCache() {
+            return cache;
         }
-
     }
 
 }

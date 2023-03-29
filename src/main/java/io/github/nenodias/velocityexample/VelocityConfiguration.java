@@ -30,6 +30,7 @@ public class VelocityConfiguration implements WebMvcConfigurer {
     @Bean
     public ViewResolver viewResolver(final VelocityEngine velocityEngine,final ServletConfig servletConfig) {
         SpringVelocityViewResolver viewResolver = new SpringVelocityViewResolver(velocityEngine, servletConfig);
+        viewResolver.setCache(true);
         viewResolver.setPrefix("/templates/");
         viewResolver.setSuffix(".vm");
         viewResolver.setContentType("text/html;charset=UTF-8");
