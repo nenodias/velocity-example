@@ -60,3 +60,7 @@ public class VelocityConfiguration implements WebMvcConfigurer {
 ```
 
 E a criação de uma ***ViewResolver***, a classe ***SpringVelocityViewResolver***
+
+[Link SpringVelocityViewResolver.java](https://github.com/nenodias/velocity-example/blob/main/src/main/java/io/github/nenodias/velocityexample/SpringVelocityViewResolver.java)
+
+Basicamente a inner class ***SpringVelocityView*** faz a renderização do template no metodo ***render***
